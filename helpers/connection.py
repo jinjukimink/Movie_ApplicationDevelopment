@@ -4,7 +4,7 @@ conn = None
 
 # TODO: Override connection info
 
-db_connection_str = "host=### user=### dbname=### password=### port=###"
+db_connection_str = "host=localhost user=postgres dbname=Assignment3 password=4473 port=5432"
 
 try:
     conn = conn = pg.connect(db_connection_str)

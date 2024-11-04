@@ -113,9 +113,6 @@ def display_info(search_type, search_value):
     # end
     pass
 
-#def insert_customer(id, name, email, pwd, gender, phone, genres) :
-    # TODO(추가)
-
 def insert_customer(id, name, email, pwd, gender, phone, genres):
     if not id:
         print("Error: c_id 값이 필요합니다.")
@@ -133,10 +130,9 @@ def insert_customer(id, name, email, pwd, gender, phone, genres):
 
         # 장르가 있으면 선호 장르 삽입
         if genres:
-            genre_list = genres.split(" ")
-            for genre in genre_list:
+            for genre in genres:
                 cur.execute("SELECT gr_id FROM genre WHERE gr_name = %s", (genre,))
-                genre_row = cur.fetchone()
+                genre_row = cur.fetchone() # 해당 장르의 ID를 가지고 오며 ID가 존재하면 gr_id에 삽입.
                 if genre_row:
                     gr_id = genre_row[0]
                     sql_insert_prefer = """
@@ -159,10 +155,82 @@ def insert_customer(id, name, email, pwd, gender, phone, genres):
         cur.close()
 
 
-#def update_customer(id, target, value) :
+def update_customer(id, target, value) :
     # TODO
+    if not id: 
+        print("Error: c_id값이 존재하지 않습니다.")
+        return
+    try:
+        cur=conn.cursor()
+        cur.execute("SET search_path to s_2021034448")
+       #print("Before update")
+        display_info('id',id)
 
-#def delete_customer(id) :
+        if target=="email":
+            sql="UPDATE customer SET email= %s WHERE c_id=%s"
+            cur.execute(sql,(value,id))
+        elif target=="pwd":
+            sql="UPDATE customer SET pwd=%s WHERE c_id=%s"
+            cur.execute(sql,(value,id))
+        elif target=="phone":
+            sql="UPDATE customer SET phone=%s WHERE c_id=%s"
+            cur.execute(sql,(value,id))
+        elif target=="genres":
+            #기존 장르 아예 삭제 후 새로 추가-> 복수개 일수도 있어서?
+            cur.execute("DELETE FROM prefer WHERE c_id=%s",(id))
+            genre_list=value.split(" ")#공백으로 split
+            for genre in genre_list:
+                cur.execute("SELECT gr_id FROM genre WHERE gr_name=%s",(genre,))
+                genre_row=cur.fetchone()
+                if genre_row:
+                    gr_id=genre_row[0]
+                    sql_insert_prefer="INSERT INTO prefer (c_id,gr_id) VALUES (%s,%s)"
+                    cur.execute(sql_insert_prefer,(id,gr_id))
+                else: 
+                    print(f"Warning: Genre '{genre} does not exist in the database")
+        else:
+            print(f"Error: '{target}' is not a valid field")
+            return
+        
+        conn.commit()
+        display_info('id',id)
+
+
+    except Exception as err:
+        print(f"Error update customer:{err}")
+        conn.rollback()
+    finally:
+        cur.close()
+
+def delete_customer(id) :
+    if not id:
+        print("Error: c_id값이 존재하지 않습니다.")
+        return
+    try:
+        cur=conn.cursor()
+        cur.execute("SET search_path to s_2021034448")
+
+        # prefer 테이블에서 관련 데이터 삭제
+        sql_delete_prefer = """
+        DELETE FROM prefer 
+        WHERE c_id = %s
+        """
+        cur.execute(sql_delete_prefer, (id,))
+        
+        sql_delete_customer="""
+        DELETE FROM customer 
+        WHERE c_id=%s
+        """
+        cur.execute(sql_delete_customer,(id,))
+        conn.commit()
+        display_info('id',id)
+
+    except Exception as err:
+        print(f"Error delete customer: {err}")
+        conn.rollback()
+    finally:
+        cur.close()
+
     # TODO
 
 def main(args):
@@ -183,10 +251,14 @@ def main(args):
         insert_customer(args.id, args.name, 
             args.email, args.pwd, args.gender, args.phone, args.genres)
 
-    #elif args.command == "update":
+    elif args.command == "update":
         # TODO
-    #elif args.command == "delete":
+        value = ' '.join(args.value)
+        update_customer(args.id,args.target,value)
+
+    elif args.command == "delete":
         # TODO
+        delete_customer(args.id)
     else :
         print("Error: query command error.")
 
@@ -217,21 +289,37 @@ if __name__ == "__main__":
 
     #[1-2]insert : 파싱해서 각자 attribute에 넣어주는 거임
     parser_insert = subparsers.add_parser('insert', help='Insert new customer data')
-    parser_insert.add_argument('-i', dest='id', type=int, required=True, help='Customer ID')
-    parser_insert.add_argument('-n', dest='name', type=str, required=True, help='Customer name')
-    parser_insert.add_argument('-e', dest='email', type=str, required=True, help='Customer email')
-    parser_insert.add_argument('-p', dest='pwd', type=str, required=True, help='Customer password')
-    parser_insert.add_argument('-g', dest='gender', type=str, required=True, choices=['M', 'F'], help='Customer gender')
-    parser_insert.add_argument('-ph', dest='phone', type=str, required=True, help='Customer phone number')
-    parser_insert.add_argument('-genres', dest='genres', type=str, required=True, help='Preferred genres, separated by spaces')
+    #parser_insert.add_argument('-i', dest='id', type=int, required=True, help='Customer ID')
+    #parser_insert.add_argument('-n', dest='name', type=str, required=True, help='Customer name')
+    #parser_insert.add_argument('-e', dest='email', type=str, required=True, help='Customer email')
+    #parser_insert.add_argument('-p', dest='pwd', type=str, required=True, help='Customer password')
+    #parser_insert.add_argument('-g', dest='gender', type=str, required=True, choices=['M', 'F'], help='Customer gender')
+    #parser_insert.add_argument('-ph', dest='phone', type=str, required=True, help='Customer phone number')
+    #parser_insert.add_argument('-genres', dest='genres', type=str, required=True, help='Preferred genres, separated by spaces')
+    parser_insert.add_argument('id', type=int, help='Customer ID')
+    parser_insert.add_argument('name', type=str, help='Customer name')
+    parser_insert.add_argument('email', type=str, help='Customer email')
+    parser_insert.add_argument('pwd', type=str, help='Customer password')
+    parser_insert.add_argument('gender', type=str, choices=['M', 'F'], help='Customer gender')
+    parser_insert.add_argument('phone', type=str, help='Customer phone number')
+    parser_insert.add_argument('genres', type=str, help='Preferred genres, separated by spaces')
+    parser_insert.add_argument('-g', dest='genres', nargs='+', help='Preferred genres, separated by spaces')
     # TODO
     
     #[1-3]update
     parser_update = subparsers.add_parser('update', help='Update one of customer data')
+    parser_update.add_argument('-i', dest='id', type=int, required=True, help='Customer ID')
+    parser_update.add_argument('-m', dest='target', action='store_const', const='email', help='Update email')
+    parser_update.add_argument('-p', dest='target', action='store_const', const='pwd', help='Update password')
+    parser_update.add_argument('-ph', dest='target', action='store_const', const='phone', help='Update phone')
+    parser_update.add_argument('-gs', dest='target', action='store_const', const='genres', help='Update genres')
+    parser_update.add_argument('value', nargs='+', help='New field value')  # nargs='+'를 사용하여 여러 단어를 받음
+    #parser_update.add_argument('value', type=str, help='New field value')  # 위치 인자로 설정
     # TODO
 
     #[1-4]delete
-    parser_delete = subparsers.add_parser('delete', help='Delete customer data with associated data')
+    parser_delete = subparsers.add_parser('delete',help='Delete customer data with associated data')
+    parser_delete.add_argument('-i',dest='id',type=int,required=True,help='Customer ID')
     # TODO
     
     args = parser.parse_args()

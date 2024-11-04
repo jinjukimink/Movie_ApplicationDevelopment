@@ -154,7 +154,6 @@ def insert_customer(id, name, email, pwd, gender, phone, genres):
     finally:
         cur.close()
 
-
 def update_customer(id, target, value) :
     # TODO
     if not id: 

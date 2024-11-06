@@ -165,10 +165,10 @@ def update_customer(id, target, value) :
        #print("Before update")
         display_info('id',id)
 
-        if target=="email":
+        if target == "email":
             sql="UPDATE customer SET email= %s WHERE c_id=%s"
             cur.execute(sql,(value,id))
-        elif target=="pwd":
+        elif target == "pwd":
             sql="UPDATE customer SET pwd=%s WHERE c_id=%s"
             cur.execute(sql,(value,id))
         elif target=="phone":
@@ -288,13 +288,6 @@ if __name__ == "__main__":
 
     #[1-2]insert : 파싱해서 각자 attribute에 넣어주는 거임
     parser_insert = subparsers.add_parser('insert', help='Insert new customer data')
-    #parser_insert.add_argument('-i', dest='id', type=int, required=True, help='Customer ID')
-    #parser_insert.add_argument('-n', dest='name', type=str, required=True, help='Customer name')
-    #parser_insert.add_argument('-e', dest='email', type=str, required=True, help='Customer email')
-    #parser_insert.add_argument('-p', dest='pwd', type=str, required=True, help='Customer password')
-    #parser_insert.add_argument('-g', dest='gender', type=str, required=True, choices=['M', 'F'], help='Customer gender')
-    #parser_insert.add_argument('-ph', dest='phone', type=str, required=True, help='Customer phone number')
-    #parser_insert.add_argument('-genres', dest='genres', type=str, required=True, help='Preferred genres, separated by spaces')
     parser_insert.add_argument('id', type=int, help='Customer ID')
     parser_insert.add_argument('name', type=str, help='Customer name')
     parser_insert.add_argument('email', type=str, help='Customer email')

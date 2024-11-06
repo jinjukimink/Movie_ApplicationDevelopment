@@ -49,3 +49,5 @@ Command : [ customer.py insert 9999 dblab dblab@hanyang.ac.kr password M +82 123
 Command : [ customer.py insert 9999 dblab dblab@hanyang.ac.kr password M +82 123-456-7890 -g Action Drama Romance ]
 Command : [ customer.py insert 9999 dblab dblab@hanyang.ac.kr password M +82 123-456-7890 -g Action Drama Romance ]
 Command : [ customer.py update -i 9999 -p passord dblab ]
+Command : [ customer.py update -i 9999 -ph +82 010-1234-5678 ]
+Command : [ customer.py update -i 9999 -ph +82 020-1234-5678 ]

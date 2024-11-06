@@ -88,7 +88,7 @@ if __name__ == "__main__":
     parser_info = subparsers.add_parser('info', help='Display participant associated to genre info')
     group_info = parser_info.add_mutually_exclusive_group(required=True)
     # TODO
-    group_info.add_argument('-a',dest='all',type=int, help='Show all paricipants')
+    group_info.add_argument('-a',dest='all',type=int, help='Show all paricipants on the role')
     group_info.add_argument('-o',dest='id',type=int, help='Search by paricipants by movie_id')
     parser_info.add_argument('role',type=str,help='Role of the participant')
 

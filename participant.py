@@ -65,7 +65,9 @@ def display_info(search_type, search_value):
             cur.execute(sql,{'search_value':search_value})
 
         elif search_type == 'profession':
-            sql="""
+            # 문자열로 변환 후 와일드카드 추가하여 전달
+            search_value_with_wildcard = f"%{search_value}%"
+            sql = """
             SELECT pp.p_id,
             pp.p_name,
             pp.major_work,
@@ -73,14 +75,14 @@ def display_info(search_type, search_value):
             FROM participant pp
             JOIN profession pf ON pf.p_id=pp.p_id
             JOIN occupation o ON o.ocu_id=pf.ocu_id
-            WHERE o.ocu_name = %(search_value)s
+            WHERE o.ocu_name ILIKE %(search_value_with_wildcard)s
             GROUP BY 
                 pp.p_id, pp.p_name, pp.major_work
             ORDER BY pp.p_id ASC
             """
-            cur.execute(sql,{'search_value':search_value})
+            cur.execute(sql, {'search_value_with_wildcard': search_value_with_wildcard})
 
-        rows=cur.fetchall()
+        rows = cur.fetchall()
 
         if rows:
             column_names=[desc[0] for desc in cur.description]
@@ -108,9 +110,10 @@ def main(args):
             name = ' '.join(args.name) if isinstance(args.name, list) else args.name #공백처리하려고
             display_info('name', name)
         elif args.profession:
-            if not is_valid_pro(args.profession) :
-                print(f"Error: {args.profession} is not valid profession.")
-            else :
+            profession = args.profession.lower()
+            if not is_valid_pro(profession):
+                print(f"Error: {args.profession} is not a valid profession.")
+            else:
                 display_info('profession', args.profession)
     
     else :

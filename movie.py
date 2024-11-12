@@ -118,10 +118,11 @@ def display_info(search_type, search_value):
             cur.execute(sql, (f"%{search_value}%",))
 
         elif search_type == 'genre':
-            genres = search_value.split(',')
+            genres = search_value.lower().split(',')  # 소문자로 변환 후 split
             genre_conditions = " AND ".join(
-                [f"'{genre.strip()}' = ANY(ARRAY_AGG(g.gr_name))" for genre in genres]
+                [f"'{genre.strip()}' ILIKE ANY(ARRAY_AGG(LOWER(g.gr_name)))" for genre in genres]
             )
+
 
             sql = f"""
                 SELECT 
@@ -292,6 +293,40 @@ def display_info(search_type, search_value):
                     m.m_id ASC
                 """
             cur.execute(sql, (search_value,))
+        
+        elif search_type == 'type':
+            #sql = "SELECT * FROM movie WHERE m_rating >= %s;"
+            sql="""
+                SELECT 
+                    m.m_id, 
+                    m.m_name, 
+                    m.m_type, 
+                    m.start_year, 
+                    m.end_year, 
+                    m.is_adult, 
+                    m.runtimes, 
+                    m.m_rating AS imdb_rating, 
+                    COALESCE(
+                        (m.m_rating * m.votes + COALESCE(SUM(ct.rating), 0)) / 
+                        (m.votes + COUNT(ct.rating)), 
+                        m.m_rating
+                    ) AS final_rating,
+                    STRING_AGG(DISTINCT g.gr_name, ', ') AS genres
+                FROM 
+                    movie m
+                LEFT JOIN 
+                    classify c ON m.m_id = c.m_id
+                LEFT JOIN 
+                    genre g ON c.gr_id = g.gr_id
+                LEFT JOIN 
+                    comment_to ct ON m.m_id = ct.m_id
+                WHERE m.m_type ILIKE %s
+                GROUP BY 
+                    m.m_id
+                ORDER BY 
+                    m.m_id ASC
+                """
+            cur.execute(sql, (search_value,))
 
         rows = cur.fetchall()
         
@@ -319,10 +354,11 @@ def main(args):
             display_info('id',args.id)
         elif args.name:
             # nargs='+'로 받은 name 인자를 공백으로 이어 붙여 하나의 문자열로 변환
-            name = ' '.join(args.name) if isinstance(args.name, list) else args.name
+            name = ' '.join(args.name).lower() if isinstance(args.name, list) else args.name
             display_info('name', name)
         elif args.genre:
-            display_info('genre', args.genre)
+            genre=args.genre
+            display_info('genre', genre)
         elif args.start_year:
             display_info('start_year', args.start_year)
         elif args.end_year:
@@ -333,6 +369,9 @@ def main(args):
             display_info('is_adult', is_adult)
         elif args.rating:
             display_info('rating', args.rating)
+        elif args.type:
+            
+            display_info('type',args.type)
 
 
 if __name__ == "__main__":
@@ -363,7 +402,7 @@ if __name__ == "__main__":
     group_info.add_argument('-ey', dest='end_year', type=int, help='Search by end year')
     group_info.add_argument('-ad', dest='is_adult', type=str, help='Search by adult content')
     group_info.add_argument('-r', dest='rating', type=float, help='Search by rating')
-    
+    group_info.add_argument('-t', dest='type', type=str, help='Search by type')
     # TODO
 
 

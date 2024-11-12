@@ -169,11 +169,25 @@ def update_customer(id, target, value) :
             sql="UPDATE customer SET email= %s WHERE c_id=%s"
             cur.execute(sql,(value,id))
         elif target == "pwd":
-            sql="UPDATE customer SET pwd=%s WHERE c_id=%s"
-            cur.execute(sql,(value,id))
+            if len(value)!=2:
+                print("Error: 기존 비밀번호와 새 비밀번호를 입력해야 합니다.")
+                print(f"value received: {args.value}")
+                return
+            
+            old_password,new_password = value
+            cur.execute("SELECT pwd FROM customer WHERE c_id=%s",(id,))
+            result=cur.fetchone()
+            if not result or result[0] != old_password:
+                print("Error: 기존 비밀번호가 일치하지 않음",result[0],old_password)
+                return
+            sql="UPDATE customer SET pwd= %s WHERE c_id=%s"
+            cur.execute(sql,(new_password,id))
+
+    
         elif target=="phone":
             sql="UPDATE customer SET phone=%s WHERE c_id=%s"
             cur.execute(sql,(value,id))
+
         elif target=="genres":
             #기존 장르 아예 삭제 후 새로 추가-> 복수개 일수도 있어서?
             cur.execute("DELETE FROM prefer WHERE c_id=%s",(id))
@@ -208,7 +222,7 @@ def delete_customer(id) :
     try:
         cur=conn.cursor()
         cur.execute("SET search_path to s_2021034448")
-
+        display_info('id', id)
         # prefer 테이블에서 관련 데이터 삭제
         sql_delete_prefer = """
         DELETE FROM prefer 
@@ -222,7 +236,7 @@ def delete_customer(id) :
         """
         cur.execute(sql_delete_customer,(id,))
         conn.commit()
-        display_info('id',id)
+        #display_info('id',id)
 
     except Exception as err:
         print(f"Error delete customer: {err}")
@@ -237,7 +251,8 @@ def main(args):
         if args.id:
             display_info('id',args.id)
         elif args.name:
-            display_info('name', args.name)
+            name = ' '.join(args.name).lower()  # 여러 단어를 하나의 문자열로 결합하고 소문자로 변환
+            display_info('name', name)
         elif args.genre:
             if not is_valid_genre(args.genre):
                 print(f"Error: '{args.genre}' is not a valid genre.")
@@ -252,8 +267,19 @@ def main(args):
 
     elif args.command == "update":
         # TODO
-        value = ' '.join(args.value)
-        update_customer(args.id,args.target,value)
+        # if args.target=='pwd' and len(args.value)==2:
+        #     old_password,new_password = args.value
+        #     update_customer(args.id,args.target,old_password,new_password)
+        # else:
+        #     #value = ' '.join(args.value)
+        #     update_customer(args.id,args.target,None,' '.join(args.value))
+        if args.target == "pwd":
+            update_customer(args.id,args.target,args.value)
+        else:
+            update_value = args.value[0]  # 하나의 문자열로 처리
+            update_customer(args.id, args.target, update_value)
+
+        
 
     elif args.command == "delete":
         # TODO
@@ -282,7 +308,7 @@ if __name__ == "__main__":
     parser_info = subparsers.add_parser('info', help='Display target customers info')
     group_info = parser_info.add_mutually_exclusive_group(required=True)
     group_info.add_argument('-i', dest='id', type=int, help='c_id of customer entity')
-    group_info.add_argument('-n', dest='name', type=str, help='c_name of customer entity')
+    group_info.add_argument('-n', dest='name', type=str,nargs='+', help='c_name of customer entity')
     group_info.add_argument('-g', dest='genre', type=str, help='genre which customer prefer')
     group_info.add_argument('-a', dest='all', type=str, help='display rows with top [value]')
 
@@ -294,7 +320,7 @@ if __name__ == "__main__":
     parser_insert.add_argument('pwd', type=str, help='Customer password')
     parser_insert.add_argument('gender', type=str, choices=['M', 'F'], help='Customer gender')
     parser_insert.add_argument('phone', type=str, help='Customer phone number')
-    parser_insert.add_argument('genres', type=str, help='Preferred genres, separated by spaces')
+    #parser_insert.add_argument('genres', type=str, help='Preferred genres, separated by spaces')
     parser_insert.add_argument('-g', dest='genres', nargs='+', help='Preferred genres, separated by spaces')
     # TODO
     
@@ -303,9 +329,9 @@ if __name__ == "__main__":
     parser_update.add_argument('-i', dest='id', type=int, required=True, help='Customer ID')
     parser_update.add_argument('-m', dest='target', action='store_const', const='email', help='Update email')
     parser_update.add_argument('-p', dest='target', action='store_const', const='pwd', help='Update password')
-    parser_update.add_argument('-ph', dest='target', action='store_const', const='phone', help='Update phone')
+    parser_update.add_argument('-ph', dest='target',action='store_const', const='phone', help='Update phone')
     parser_update.add_argument('-gs', dest='target', action='store_const', const='genres', help='Update genres')
-    parser_update.add_argument('value', nargs='+', help='New field value')  # nargs='+'를 사용하여 여러 단어를 받음
+    parser_update.add_argument('value', nargs="+", help='New field value')  # nargs='+'를 사용하여 여러 단어를 받음
     #parser_update.add_argument('value', type=str, help='New field value')  # 위치 인자로 설정
     # TODO
 

@@ -49,6 +49,7 @@ def display_info(search_type, search_value):
             cur.execute(sql, {"name": search_value})
 
         elif search_type == 'genre' :
+            #genres = search_value.lower().split(',')  # 소문자로 변환 후 split
             sql = """
             SELECT 
                 cu.c_id, 
@@ -57,13 +58,15 @@ def display_info(search_type, search_value):
                 cu.gender, 
                 cu.phone, 
                 STRING_AGG(DISTINCT gr.gr_name, ', ') AS preferred_genres
-            FROM customer cu JOIN prefer p ON cu.c_id = p.c_id JOIN genre gr ON p.gr_id = gr.gr_id
+            FROM customer cu 
+            JOIN prefer p ON cu.c_id = p.c_id 
+            JOIN genre gr ON p.gr_id = gr.gr_id
             WHERE cu.c_id IN (
                     SELECT cu.c_id
                     FROM customer cu
                     JOIN prefer p ON cu.c_id = p.c_id
                     JOIN genre gr ON p.gr_id = gr.gr_id
-                    WHERE gr.gr_name = %(genre)s
+                    WHERE gr.gr_name ILIKE %(genre)s
                     )
             GROUP BY cu.c_id, cu.c_name, cu.email, cu.gender, cu.phone
             ORDER BY cu.c_id ASC;
@@ -98,10 +101,10 @@ def display_info(search_type, search_value):
             return False
         else:
             column_names = [desc[0] for desc in cur.description]
-            #
-            #print_rows_to_file(column_names, rows)
-            #make_csv(column_names, rows)
-            #
+            
+            # print_rows_to_file(column_names, rows)
+            # make_csv(column_names, rows)
+            
             print_rows(column_names, rows)
             return True
 
@@ -254,10 +257,13 @@ def main(args):
             name = ' '.join(args.name).lower()  # 여러 단어를 하나의 문자열로 결합하고 소문자로 변환
             display_info('name', name)
         elif args.genre:
-            if not is_valid_genre(args.genre):
-                print(f"Error: '{args.genre}' is not a valid genre.")
+            genre=args.genre.lower().capitalize()
+            if not is_valid_genre(genre):
+                print(f"Error: '{genre}' is not a valid genre.")
             else:
-                display_info('genre', args.genre)
+                display_info('genre',genre)
+
+
         elif args.all:
             display_info('all', args.all)
 

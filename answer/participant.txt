@@ -44,7 +44,7 @@ p_id     | p_name                          | major_work | profession
 1826     | M. Emmet Walsh                  | 0083658    | actor, producer, stunts                        
 1957     | Lloyd Bochner                   | 0102510    | actor, archive_footage                         
 2051     | Jimmy Durante                   | 0057193    | actor, music_department, soundtrack            
-2079     | Steve Forrest                   | 0082766    | actor, archive_footage, soundtrack             
+2079     | Steve Foㅂrest                   | 0082766    | actor, archive_footage, soundtrack             
 2083     | Carl Franklin                   | 0102592    | actor, director, producer                      
 3162     | Marc Summers                    | 5649144    | actor, producer, writer                        
 3944     | Ian James Corlett               | 0214341    | actor, music_department, writer                

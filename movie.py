@@ -122,8 +122,6 @@ def display_info(search_type, search_value):
             genre_conditions = " AND ".join(
                 [f"'{genre.strip()}' ILIKE ANY(ARRAY_AGG(LOWER(g.gr_name)))" for genre in genres]
             )
-
-
             sql = f"""
                 SELECT 
                     m.m_id, 
@@ -334,7 +332,7 @@ def display_info(search_type, search_value):
             print("No results found")
         else:
             column_names = [desc[0] for desc in cur.description]
-            print(f"Total rows: {len(rows)}")  # 결과의 총 개수 출력
+            #print(f"Total rows: {len(rows)}")  # 결과의 총 개수 출력
             print_rows(column_names, rows)
     
     except Exception as err:

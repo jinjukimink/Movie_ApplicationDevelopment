@@ -59,6 +59,7 @@ def is_valid_genre(genre):
         "Musical", "Thriller", "History"
     }
     
+    #return genre.lower() in (g.lower() for g in valid_genres)
     return genre in valid_genres
 
     

@@ -75,7 +75,12 @@ def display_info(search_type, search_value):
             FROM participant pp
             JOIN profession pf ON pf.p_id=pp.p_id
             JOIN occupation o ON o.ocu_id=pf.ocu_id
-            WHERE o.ocu_name ILIKE %(search_value_with_wildcard)s
+            WHERE pp.p_id IN (
+                SELECT pf.p_id
+                FROM profession pf
+                JOIN occupation o ON o.ocu_id = pf.ocu_id
+                WHERE (o.ocu_name) ILIKE %(search_value_with_wildcard)s
+            )
             GROUP BY 
                 pp.p_id, pp.p_name, pp.major_work
             ORDER BY pp.p_id ASC
@@ -110,14 +115,17 @@ def main(args):
             name = ' '.join(args.name) if isinstance(args.name, list) else args.name #공백처리하려고
             display_info('name', name)
         elif args.profession:
-            profession = args.profession.lower()
+            profession = ' '.join(args.profession).lower() if isinstance(args.profession, list) else args.profession #공백처리하려고
             if not is_valid_pro(profession):
                 print(f"Error: {args.profession} is not a valid profession.")
+                return
             else:
-                display_info('profession', args.profession)
+                #profession = ' '.join(args.profession) if isinstance(args.profession, list) else args.profession #공백처리하려고
+                display_info('profession', profession)
     
     else :
         print("Error: query command error.")
+    
 
     pass
 
@@ -143,7 +151,7 @@ if __name__ == "__main__":
     group_info.add_argument('-a',dest='all',type=int,help='Show all participants')
     group_info.add_argument('-i',dest='id',type=int,help='Search by participants by id')
     group_info.add_argument('-n',dest='name',type=str, nargs='+', help='Search participants by name')
-    group_info.add_argument('-pr',dest='profession',type=str,help='Search participants by profession')
+    group_info.add_argument('-pr',dest='profession',type=str,nargs='+',help='Search participants by profession')
     
     
 

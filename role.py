@@ -21,7 +21,7 @@ def display_info(search_type, search_value, search_role):
             FROM participate p
             LEFT JOIN participant pp ON pp.p_id=p.p_id
             LEFT JOIN movie m ON m.m_id = p.m_id
-            WHERE p.role = %(search_role)s
+            WHERE p.role ILIKE %(search_role)s
             GROUP BY p.p_id, pp.p_name, p.role, m.m_name
             ORDER BY p.p_id ASC
             """
@@ -41,7 +41,7 @@ def display_info(search_type, search_value, search_role):
             FROM participant pp
             JOIN participate p ON pp.p_id = p.p_id
             JOIN movie m ON m.m_id=p.m_id
-            WHERE m.m_id = %(search_value)s AND p.role=%(search_role)s
+            WHERE m.m_id = %(search_value)s AND p.role ILIKE %(search_role)s
             GROUP BY 
                 pp.p_id, pp.p_name, p.role
             """
@@ -89,7 +89,7 @@ if __name__ == "__main__":
     group_info = parser_info.add_mutually_exclusive_group(required=True)
     # TODO
     group_info.add_argument('-a',dest='all',type=int, help='Show all paricipants on the role')
-    group_info.add_argument('-o',dest='id',type=int, help='Search by paricipants by movie_id')
+    group_info.add_argument('-i',dest='id',type=int, help='Search by paricipants by movie_id')
     parser_info.add_argument('role',type=str,help='Role of the participant')
 
     args = parser.parse_args()

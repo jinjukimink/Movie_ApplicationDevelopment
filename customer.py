@@ -102,8 +102,8 @@ def display_info(search_type, search_value):
         else:
             column_names = [desc[0] for desc in cur.description]
             
-            # print_rows_to_file(column_names, rows)
-            # make_csv(column_names, rows)
+            #print_rows_to_file(column_names, rows)
+            #make_csv(column_names, rows)
             
             print_rows(column_names, rows)
             return True
@@ -123,6 +123,14 @@ def insert_customer(id, name, email, pwd, gender, phone, genres):
     try:
         cur = conn.cursor()
         cur.execute("SET search_path to s_2021034448") #스키마 지정
+
+                # 중복된 ID인지 확인
+        cur.execute("SELECT * FROM customer WHERE c_id = %s", (id,))
+        existing_customer = cur.fetchone()
+        if existing_customer:
+            print(f"Error: Customer with ID {id} already exists.")
+            display_info('id', id)  # 중복된 고객 정보 출력
+            return
 
         # customer 테이블에 데이터 삽입
         sql_insert_customer = """

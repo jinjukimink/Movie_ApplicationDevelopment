@@ -25,11 +25,10 @@ def display_info(search_type, search_value):
                 m.runtimes, 
                 m.m_rating AS imdb_rating, 
                 COALESCE(
-                    (m.m_rating * m.votes + COALESCE(SUM(ct.rating), 0)) / 
-                    (m.votes + COUNT(ct.rating)), 
-                    m.m_rating
-                ) AS final_rating,
-                STRING_AGG(DISTINCT g.gr_name, ', ') AS genres
+                        (m.m_rating * m.votes + COALESCE(SUM(DISTINCT(ct.rating)), 0)) / 
+                        (m.votes + COUNT(DISTINCT(ct.rating))),m.m_rating
+                    ) AS final_rating,
+                    STRING_AGG(DISTINCT g.gr_name, ', ') AS genres
             FROM 
                 movie m
             LEFT JOIN 
@@ -62,11 +61,10 @@ def display_info(search_type, search_value):
                 m.runtimes, 
                 m.m_rating AS imdb_rating, 
                 COALESCE(
-                    (m.m_rating * m.votes + COALESCE(SUM(ct.rating), 0)) / 
-                    (m.votes + COUNT(ct.rating)), 
-                    m.m_rating
-                ) AS final_rating,
-                STRING_AGG(DISTINCT g.gr_name, ', ') AS genres
+                        (m.m_rating * m.votes + COALESCE(SUM(DISTINCT(ct.rating)), 0)) / 
+                        (m.votes + COUNT(DISTINCT(ct.rating))),m.m_rating
+                    ) AS final_rating,
+                    STRING_AGG(DISTINCT g.gr_name, ', ') AS genres
             FROM 
                 movie m
             LEFT JOIN 
@@ -96,11 +94,10 @@ def display_info(search_type, search_value):
                 m.runtimes, 
                 m.m_rating AS imdb_rating, 
                 COALESCE(
-                    (m.m_rating * m.votes + COALESCE(SUM(ct.rating), 0)) / 
-                    (m.votes + COUNT(ct.rating)), 
-                    m.m_rating
-                ) AS final_rating,
-                STRING_AGG(DISTINCT g.gr_name, ', ') AS genres
+                        (m.m_rating * m.votes + COALESCE(SUM(DISTINCT(ct.rating)), 0)) / 
+                        (m.votes + COUNT(DISTINCT(ct.rating))),m.m_rating
+                    ) AS final_rating,
+                    STRING_AGG(DISTINCT g.gr_name, ', ') AS genres
             FROM 
                 movie m
             LEFT JOIN 
@@ -133,11 +130,10 @@ def display_info(search_type, search_value):
                     m.runtimes, 
                     m.m_rating AS imdb_rating, 
                     COALESCE(
-                        (m.m_rating * m.votes + COALESCE(SUM(ct.rating), 0)) / 
-                        (m.votes + COUNT(ct.rating)), 
-                        m.m_rating
-                    ) AS final_rating,
-                    STRING_AGG(DISTINCT g.gr_name, ', ') AS genres
+                            (m.m_rating * m.votes + COALESCE(SUM(DISTINCT(ct.rating)), 0)) / 
+                            (m.votes + COUNT(DISTINCT(ct.rating))),m.m_rating
+                        ) AS final_rating,
+                        STRING_AGG(DISTINCT g.gr_name, ', ') AS genres
                 FROM 
                     movie m
                 LEFT JOIN 
@@ -169,11 +165,10 @@ def display_info(search_type, search_value):
                     m.runtimes, 
                     m.m_rating AS imdb_rating, 
                     COALESCE(
-                        (m.m_rating * m.votes + COALESCE(SUM(ct.rating), 0)) / 
-                        (m.votes + COUNT(ct.rating)), 
-                        m.m_rating
-                    ) AS final_rating,
-                    STRING_AGG(DISTINCT g.gr_name, ', ') AS genres
+                            (m.m_rating * m.votes + COALESCE(SUM(DISTINCT(ct.rating)), 0)) / 
+                            (m.votes + COUNT(DISTINCT(ct.rating))),m.m_rating
+                        ) AS final_rating,
+                        STRING_AGG(DISTINCT g.gr_name, ', ') AS genres
                 FROM 
                     movie m
                 LEFT JOIN 
@@ -203,11 +198,10 @@ def display_info(search_type, search_value):
                     m.runtimes, 
                     m.m_rating AS imdb_rating, 
                     COALESCE(
-                        (m.m_rating * m.votes + COALESCE(SUM(ct.rating), 0)) / 
-                        (m.votes + COUNT(ct.rating)), 
-                        m.m_rating
-                    ) AS final_rating,
-                    STRING_AGG(DISTINCT g.gr_name, ', ') AS genres
+                            (m.m_rating * m.votes + COALESCE(SUM(DISTINCT(ct.rating)), 0)) / 
+                            (m.votes + COUNT(DISTINCT(ct.rating))),m.m_rating
+                        ) AS final_rating,
+                        STRING_AGG(DISTINCT g.gr_name, ', ') AS genres
                 FROM 
                     movie m
                 LEFT JOIN 
@@ -237,11 +231,10 @@ def display_info(search_type, search_value):
                     m.runtimes, 
                     m.m_rating AS imdb_rating, 
                     COALESCE(
-                        (m.m_rating * m.votes + COALESCE(SUM(ct.rating), 0)) / 
-                        (m.votes + COUNT(ct.rating)), 
-                        m.m_rating
-                    ) AS final_rating,
-                    STRING_AGG(DISTINCT g.gr_name, ', ') AS genres
+                            (m.m_rating * m.votes + COALESCE(SUM(DISTINCT(ct.rating)), 0)) / 
+                            (m.votes + COUNT(DISTINCT(ct.rating))),m.m_rating
+                        ) AS final_rating,
+                        STRING_AGG(DISTINCT g.gr_name, ', ') AS genres
                 FROM 
                     movie m
                 LEFT JOIN 
@@ -271,11 +264,10 @@ def display_info(search_type, search_value):
                     m.runtimes, 
                     m.m_rating AS imdb_rating, 
                     COALESCE(
-                        (m.m_rating * m.votes + COALESCE(SUM(ct.rating), 0)) / 
-                        (m.votes + COUNT(ct.rating)), 
-                        m.m_rating
-                    ) AS final_rating,
-                    STRING_AGG(DISTINCT g.gr_name, ', ') AS genres
+                            (m.m_rating * m.votes + COALESCE(SUM(DISTINCT(ct.rating)), 0)) / 
+                            (m.votes + COUNT(DISTINCT(ct.rating))),m.m_rating
+                        ) AS final_rating,
+                        STRING_AGG(DISTINCT g.gr_name, ', ') AS genres
                 FROM 
                     movie m
                 LEFT JOIN 
@@ -296,7 +288,7 @@ def display_info(search_type, search_value):
             #sql = "SELECT * FROM movie WHERE m_rating >= %s;"
             sql="""
                 SELECT 
-                    m.m_id, 
+                    (m.m_id), 
                     m.m_name, 
                     m.m_type, 
                     m.start_year, 
@@ -305,11 +297,10 @@ def display_info(search_type, search_value):
                     m.runtimes, 
                     m.m_rating AS imdb_rating, 
                     COALESCE(
-                        (m.m_rating * m.votes + COALESCE(SUM(ct.rating), 0)) / 
-                        (m.votes + COUNT(ct.rating)), 
-                        m.m_rating
-                    ) AS final_rating,
-                    STRING_AGG(DISTINCT g.gr_name, ', ') AS genres
+                            (m.m_rating * m.votes + COALESCE(SUM(DISTINCT(ct.rating)), 0)) / 
+                            (m.votes + COUNT(DISTINCT(ct.rating))),m.m_rating
+                        ) AS final_rating,
+                        STRING_AGG(DISTINCT g.gr_name, ', ') AS genres
                 FROM 
                     movie m
                 LEFT JOIN 
